@@ -19,8 +19,8 @@
       <div class="top__brand">
         <span class="mark" aria-hidden="true"></span>
         <div>
-          <p class="eyebrow">Angular 21 · multi-API · multi-stand</p>
-          <h1>Architecture Interview Desk</h1>
+          <p class="eyebrow">Angular 21 · несколько API · несколько стендов</p>
+          <h1>Подготовка к архитектурному интервью</h1>
         </div>
       </div>
       <nav class="top__nav" aria-label="Разделы">
@@ -39,177 +39,271 @@
     <main id="main">
       <section class="hero" id="map">
         <div class="hero__copy">
-          <p class="kicker">Подготовка к интервью</p>
+          <p class="kicker">Шпаргалка к собеседованию</p>
           <h2>
-            Границы в Angular-приложении:
-            <em>компонент → facade → data-access → API/BFF → стенды</em>
+            Как устроено Angular-приложение по слоям:
+            <em>компонент → facade → data-access → API или BFF → стенды</em>
           </h2>
           <p class="lede">
-            Ниже — официальные формулировки принципов и паттернов, затем как они
-            проявляются в Angular (DI, HttpClient, feature libs, environments)
-            в контексте нескольких apps, множества API и бэкенда как зависимости по тегам.
+            Здесь собраны официальные определения принципов и паттернов, а рядом —
+            как они выглядят в реальном Angular-коде. Материал заточен под вакансию,
+            где несколько приложений, много API-сервисов, разные стенды, а бэкенд
+            подключается в репозиторий как зависимость и обновляется по тегам.
+            Темы рассчитаны на то, что вы встречаете их впервые: формулировки развёрнутые,
+            без сокращений «для своих».
           </p>
         </div>
         <aside class="stack" aria-label="Слои в Angular-проекте">
-          <div class="stack__layer" data-layer="ui">Component + template</div>
-          <div class="stack__layer" data-layer="app">Facade / SignalStore</div>
-          <div class="stack__layer" data-layer="acl">Mapper DTO → domain/VM</div>
-          <div class="stack__layer" data-layer="bff">BFF / API client package</div>
-          <div class="stack__layer" data-layer="api">Microservices · SemVer tags</div>
+          <div class="stack__layer" data-layer="ui">Компонент и шаблон</div>
+          <div class="stack__layer" data-layer="app">Facade или SignalStore</div>
+          <div class="stack__layer" data-layer="acl">Маппер DTO → модель экрана</div>
+          <div class="stack__layer" data-layer="bff">BFF или пакет API-клиента</div>
+          <div class="stack__layer" data-layer="api">Микросервисы и SemVer-теги</div>
         </aside>
       </section>
 
       <section class="panel" id="cheat">
         <h2>Карта тем</h2>
+        <p class="lede tight">
+          На собеседовании редко спрашивают определение ради определения. Обычно хотят понять,
+          умеете ли вы проводить границы: где заканчивается UI, где начинается сценарий экрана,
+          где живёт контракт API и как не сломать всё приложение обновлением одного сервиса.
+        </p>
         <div class="grid-cards">
           <article>
             <h3>SOLID</h3>
-            <p>Принципы управления зависимостями и изменениями в классах/модулях (Martin).</p>
+            <p>
+              Пять принципов Роберта Мартина о том, как проектировать классы и модули так,
+              чтобы изменения не расползались по всей системе.
+            </p>
           </article>
           <article>
             <h3>GRASP</h3>
-            <p>Паттерны назначения ответственности объектам (Larman).</p>
+            <p>
+              Девять принципов Крэга Лармана о том, какому объекту какую ответственность отдать,
+              ещё до выбора конкретного паттерна GoF.
+            </p>
           </article>
           <article>
             <h3>DDD Strategic</h3>
-            <p>Bounded Context, Ubiquitous Language, Context Map (Evans / Vernon).</p>
+            <p>
+              Стратегическая часть предметно-ориентированного проектирования: где проходит граница
+              модели, какой язык у команды и как несколько моделей стыкуются друг с другом.
+            </p>
           </article>
           <article>
             <h3>BFF</h3>
-            <p>Отдельный backend под конкретный frontend (Newman / Microsoft).</p>
+            <p>
+              Отдельный backend под конкретный frontend, чтобы не заставлять один общий API
+              обслуживать сразу все клиенты одинаково плохо.
+            </p>
           </article>
           <article>
-            <h3>SemVer + tags</h3>
-            <p>Версионирование публичного API зависимости (semver.org).</p>
+            <h3>SemVer и теги</h3>
+            <p>
+              Правила версионирования публичного контракта зависимости, когда бэкенд-клиент
+              лежит в package.json и обновляется по тегу.
+            </p>
           </article>
         </div>
       </section>
 
-      <!-- SOLID -->
       <section class="panel" id="solid">
         <h2>SOLID</h2>
         <p class="lede tight">
-          SOLID — пять принципов объектно-ориентированного проектирования, сформулированных
-          Робертом Мартином (Uncle Bob). Фокус — <strong>управление зависимостями</strong>:
-          код должен оставаться изменяемым без хрупкости и каскадных правок.
+          SOLID — это пять принципов объектно-ориентированного проектирования, которые систематизировал
+          Роберт Мартин (Uncle Bob). Их общая идея: код должен оставаться удобным для изменений.
+          Если зависимости между модулями спроектированы плохо, любое небольшое требование тянет за собой
+          правки в десятках файлов. Если хорошо — меняется узкий слой, а остальная система продолжает работать.
         </p>
         <div class="sources-inline">
           <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Solid Relevance (Martin)</a>
-          <a href="https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html" target="_blank" rel="noopener">SRP</a>
-          <a href="https://blog.cleancoder.com/uncle-bob/2014/05/12/TheOpenClosedPrinciple.html" target="_blank" rel="noopener">OCP</a>
+          <a href="https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html" target="_blank" rel="noopener">Статья про SRP</a>
+          <a href="https://blog.cleancoder.com/uncle-bob/2014/05/12/TheOpenClosedPrinciple.html" target="_blank" rel="noopener">Статья про OCP</a>
           <a href="https://en.wikipedia.org/wiki/SOLID" target="_blank" rel="noopener">Wikipedia: SOLID</a>
-          <a href="https://angular.dev/guide/di" target="_blank" rel="noopener">Angular DI</a>
+          <a href="https://angular.dev/guide/di" target="_blank" rel="noopener">Angular: Dependency injection</a>
         </div>
 
         <article class="topic">
-          <h3>S — Single Responsibility Principle</h3>
+          <h3>S — Single Responsibility Principle (принцип единственной ответственности)</h3>
           <blockquote class="def">
             «Gather together the things that change for the same reasons. Separate things that change for different reasons.»
-            <cite>— Robert C. Martin, <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Solid Relevance</a></cite>
+            <cite>
+              — Роберт Мартин,
+              <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Solid Relevance</a>
+            </cite>
           </blockquote>
           <p>
-            Классическая краткая формулировка: у модуля должна быть <em>одна причина для изменения</em>.
-            Это не «один метод в классе», а одна ось изменений (UI, HTTP-контракт, правила отмены заказа — разные оси).
+            По-русски это звучит так: собирайте вместе то, что меняется по одной причине, и разделяйте то,
+            что меняется по разным причинам. Часто принцип упрощают до фразы «у класса должна быть одна ответственность»,
+            но важнее смотреть именно на <em>причину изменения</em>. Один файл может содержать несколько методов —
+            это нормально, если все они относятся к одной оси изменений.
           </p>
-          <h4>В Angular</h4>
+          <h4>Как это выглядит в Angular</h4>
+          <p>
+            Представьте экран списка заказов. У него есть как минимум четыре разные причины меняться:
+            внешний вид таблицы, HTTP-контракт сервиса заказов, правила «можно ли отменить заказ»
+            и способ сохранения черновика фильтра в браузере. Если всё это лежит в одном компоненте,
+            любое из этих изменений заставляет править один и тот же большой файл.
+          </p>
           <ul class="bullets">
-            <li><code>OrderListComponent</code> — отображение и пользовательские события списка.</li>
-            <li><code>OrdersApi</code> (<code>providedIn: 'root'</code> или feature providers) — только HTTP к orders.</li>
-            <li>Facade / SignalStore — сценарий экрана: загрузка, ошибки, навигация после действия.</li>
-            <li>Mapper <code>toOrder(dto)</code> — отдельный модуль: меняется при смене DTO, не при смене CSS.</li>
+            <li>
+              <code>OrderListComponent</code> отвечает только за отображение и за пользовательские события:
+              клик, выбор строки, открытие модалки.
+            </li>
+            <li>
+              <code>OrdersApi</code> знает только про HTTP: какой URL вызвать, какой тип ответа ожидать,
+              как передать параметры запроса.
+            </li>
+            <li>
+              Facade или SignalStore координирует сценарий экрана: загрузил данные, обработал ошибку,
+              обновил состояние, при необходимости перешёл на другой route.
+            </li>
+            <li>
+              Функция или модуль <code>toOrder(dto)</code> отвечает за перевод сырого ответа API
+              в удобную для экрана модель. Этот код меняется, когда меняется контракт API, а не когда
+              дизайнер просит другой цвет кнопки.
+            </li>
           </ul>
           <p class="ang">
-            Нарушение: компонент сам вызывает <code>HttpClient</code>, мапит ответ, считает скидку и пишет в
-            <code>localStorage</code>. Любое изменение API, UI или правил хранения трогает один файл.
+            Типичное нарушение: компонент сам вызывает <code>HttpClient</code>, сам превращает ответ в строки таблицы,
+            сам считает, можно ли отменить заказ, и сам пишет что-то в <code>localStorage</code>.
+            Такой компонент трудно тестировать и ещё труднее объяснять на интервью как «чистую архитектуру».
           </p>
         </article>
 
         <article class="topic">
-          <h3>O — Open/Closed Principle</h3>
+          <h3>O — Open/Closed Principle (принцип открытости/закрытости)</h3>
           <blockquote class="def">
             «A Module should be open for extension but closed for modification.»
-            <cite>— Robert C. Martin, <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Solid Relevance</a></cite>
+            <cite>
+              — Роберт Мартин,
+              <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Solid Relevance</a>
+            </cite>
           </blockquote>
           <p>
-            Новое поведение добавляют расширением (новая реализация / конфигурация), а не правкой уже работающего кода клиента абстракции.
+            Модуль должен быть открыт для расширения и закрыт для изменения. Идея в том, чтобы новое поведение
+            можно было добавить, не переписывая уже проверенный код, который этим поведением пользуются другие части системы.
+            На практике это почти всегда означает: выделить абстракцию и подключать новые реализации рядом со старыми.
           </p>
-          <h4>В Angular</h4>
+          <h4>Как это выглядит в Angular</h4>
+          <p>
+            Допустим, сегодня оплата идёт только картой, а завтра добавляют СБП. Плохой путь — открыть старый
+            <code>PaymentService</code> и вписать ещё одну ветку <code>if (type === 'sbp')</code>.
+            Хороший путь — завести абстракцию стратегии оплаты и зарегистрировать новую реализацию через DI.
+          </p>
           <ul class="bullets">
-            <li>Стратегии оплаты: интерфейс / token <code>PAYMENT_STRATEGY</code>, новые классы + <code>provide</code>, без разрастания <code>switch</code> в старом сервисе.</li>
             <li>
-              HTTP-пайплайн расширяется через
-              <a href="https://angular.dev/guide/http/interceptors" target="_blank" rel="noopener"><code>provideHttpClient(withInterceptors([...]))</code></a>
-              — новый interceptor не переписывает <code>HttpClient</code>.
+              Новая стратегия оплаты подключается через <code>provide</code> / <code>InjectionToken</code>,
+              а код checkout-сценария продолжает зависеть от абстракции, а не от конкретного класса.
             </li>
-            <li>Новый стенд = новый <code>environment</code> / набор providers, а не ветвления внутри feature-сервисов.</li>
+            <li>
+              Цепочку HTTP можно расширять без правки <code>HttpClient</code>: в
+              <a href="https://angular.dev/guide/http/interceptors" target="_blank" rel="noopener">документации Angular</a>
+              это делается через <code>provideHttpClient(withInterceptors([...]))</code>.
+              Новый interceptor — это расширение пайплайна, а не модификация ядра.
+            </li>
+            <li>
+              Новый стенд тоже лучше подключать конфигурацией providers, а не новыми условиями
+              внутри уже существующих feature-сервисов.
+            </li>
           </ul>
         </article>
 
         <article class="topic">
-          <h3>L — Liskov Substitution Principle</h3>
+          <h3>L — Liskov Substitution Principle (принцип подстановки Лисков)</h3>
           <blockquote class="def">
             «A program that uses an interface must not be confused by an implementation of that interface.»
-            <cite>— Robert C. Martin, <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Solid Relevance</a></cite>
+            <cite>
+              — Роберт Мартин,
+              <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Solid Relevance</a>
+            </cite>
           </blockquote>
           <p>
-            Исторически связан с подстановкой Барбары Лисков: объекты подтипа должны быть заменяемы на объекты супертипа
-            без нарушения корректности программы. В DI-терминах: любая реализация токена должна соблюдать контракт,
-            на который рассчитывает потребитель.
+            Программа, которая работает через интерфейс, не должна «удивляться» конкретной реализации этого интерфейса.
+            Исторически принцип связан с работой Барбары Лисков: объект подтипа можно подставить вместо объекта супертипа,
+            и программа по-прежнему останется корректной. Для фронтенда удобнее формулировка через контракт:
+            любая реализация токена или интерфейса должна соблюдать обещания, на которые рассчитывает вызывающий код.
           </p>
-          <h4>В Angular</h4>
+          <h4>Как это выглядит в Angular</h4>
           <ul class="bullets">
             <li>
-              Functional interceptor обязан принять запрос и вернуть <code>Observable&lt;HttpEvent&gt;</code> через
-              <code>next</code> — «особый» interceptor, который глотает ошибки без договорённости, ломает ожидания пайплайна.
-              См. <a href="https://angular.dev/guide/http/interceptors" target="_blank" rel="noopener">HTTP interceptors</a>.
+              Functional interceptor обязан принять запрос и вернуть поток <code>Observable&lt;HttpEvent&gt;</code>
+              через вызов <code>next</code>. Если один interceptor молча глотает ошибки или меняет смысл ответа
+              без явного контракта, он нарушает ожидания всей цепочки. См.
+              <a href="https://angular.dev/guide/http/interceptors" target="_blank" rel="noopener">HTTP interceptors</a>.
             </li>
             <li>
-              <code>AuthTokenProvider</code> для <code>dev</code> и <code>prod</code>: оба должны отдавать токен того же
-              смыслового контракта (или явно документировать отличие), иначе facade «ломается» только на одном стенде.
+              Представьте токен <code>AuthTokenProvider</code> с реализациями для локальной разработки и для production.
+              Обе реализации должны отдавать токен в одном и том же смысле: либо строку access token, либо явно
+              задокументированное отсутствие токена. Если «dev-реализация» иногда возвращает случайный мусор,
+              facade будет вести себя по-разному только на одном стенде — это и есть нарушение подстановки.
             </li>
           </ul>
         </article>
 
         <article class="topic">
-          <h3>I — Interface Segregation Principle</h3>
+          <h3>I — Interface Segregation Principle (принцип разделения интерфейса)</h3>
           <blockquote class="def">
             «Keep interfaces small so that users don’t end up depending on things they don’t need.»
-            <cite>— Robert C. Martin, <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Solid Relevance</a></cite>
+            <cite>
+              — Роберт Мартин,
+              <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Solid Relevance</a>
+            </cite>
           </blockquote>
-          <h4>В Angular</h4>
-          <ul class="bullets">
-            <li>Не один <code>BackendApi</code> на 80 методов. Отдельные <code>OrdersApi</code>, <code>CatalogApi</code>, <code>UsersApi</code>.</li>
-            <li>Feature «каталог» зависит только от catalog-клиента — при MAJOR в orders-пакете каталог не обязан обновляться.</li>
-            <li>В monorepo: публичный API библиотеки через <code>index.ts</code> / secondary entry points, без экспорта внутренних mapper’ов наружу.</li>
-          </ul>
+          <p>
+            Держите интерфейсы маленькими, чтобы клиент не зависел от методов, которые ему не нужны.
+            Иначе изменение «чужого» метода в огромном интерфейсе заставляет пересобирать и пересматривать код,
+            которому этот метод никогда не был нужен.
+          </p>
+          <h4>Как это выглядит в Angular</h4>
+          <p>
+            Вместо одного гигантского сервиса <code>BackendApi</code> с десятками методов лучше завести отдельные
+            клиенты: <code>OrdersApi</code>, <code>CatalogApi</code>, <code>UsersApi</code>.
+            Экран каталога тогда зависит только от каталога. Когда команда заказов выпускает MAJOR-версию своего пакета,
+            приложение каталога не обязано срочно обновляться только потому, что когда-то всё было свалено в один интерфейс.
+          </p>
+          <p>
+            В monorepo тот же принцип проявляется на уровне библиотек: наружу через <code>index.ts</code>
+            экспортируйте только публичный API. Внутренние mapper’ы и helper’ы оставляйте приватными для библиотеки,
+            чтобы соседние features не цеплялись к деталям реализации.
+          </p>
         </article>
 
         <article class="topic">
-          <h3>D — Dependency Inversion Principle</h3>
+          <h3>D — Dependency Inversion Principle (принцип инверсии зависимостей)</h3>
           <blockquote class="def">
             «Depend in the direction of abstraction. High level modules should not depend upon low level details.»
-            <cite>— Robert C. Martin, <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Solid Relevance</a></cite>
+            <cite>
+              — Роберт Мартин,
+              <a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Solid Relevance</a>
+            </cite>
           </blockquote>
           <p>
-            Высокоуровневая политика (сценарий checkout) не должна импортировать низкоуровневую деталь (конкретный HTTP-клиент Stripe).
-            Оба зависят от абстракции (порт / token).
+            Зависимости должны быть направлены в сторону абстракций. Высокоуровневый модуль не должен знать низкоуровневые детали.
+            Проще: сценарий «оформить заказ» не должен импортировать конкретный класс, который ходит в Stripe.
+            И сценарий, и адаптер Stripe зависят от общего порта — интерфейса или <code>InjectionToken</code>.
           </p>
-          <h4>В Angular — это буквально DI-фреймворк</h4>
+          <h4>Как это выглядит в Angular</h4>
+          <p>
+            Angular изначально построен вокруг dependency injection, поэтому DIP здесь не теория «на вырост»,
+            а повседневный механизм фреймворка. Официальные гайды:
+            <a href="https://angular.dev/guide/di" target="_blank" rel="noopener">Dependency injection in Angular</a>,
+            <a href="https://angular.dev/guide/di/defining-dependency-providers" target="_blank" rel="noopener">Defining dependency providers</a>.
+          </p>
           <ul class="bullets">
             <li>
-              Документация:
-              <a href="https://angular.dev/guide/di" target="_blank" rel="noopener">Dependency injection in Angular</a>,
-              <a href="https://angular.dev/guide/di/defining-dependency-providers" target="_blank" rel="noopener">Defining dependency providers</a>,
-              <a href="https://angular.dev/guide/di/dependency-injection-providers" target="_blank" rel="noopener">InjectionToken</a>.
+              Высокоуровневый код: <code>CheckoutFacade</code> получает зависимость через
+              <code>inject(PAYMENT_PORT)</code> и не знает, какая именно реализация подставлена.
             </li>
             <li>
-              Высокий уровень: <code>CheckoutFacade</code> делает <code>inject(PAYMENT_PORT)</code>.
-              Низкий уровень: <code>{ provide: PAYMENT_PORT, useClass: StripeAdapter }</code> в
-              <code>app.config.ts</code> / environment providers.
+              Низкоуровневый код подключается снаружи: в <code>app.config.ts</code> или в providers конкретного стенда
+              вы пишете <code>{ provide: PAYMENT_PORT, useClass: StripeAdapter }</code>.
             </li>
             <li>
-              Разные стенды: один facade, разные значения <code>API_BASE_URL</code> и адаптеров — без
-              <code>if (environment.name === 'stage2')</code> внутри компонентов.
+              Разные стенды отличаются набором providers и значениями вроде <code>API_BASE_URL</code>.
+              Компоненты при этом не читают <code>environment.name</code> и не ветвятся по строке
+              <code>'stage2'</code> — они всегда работают с абстракцией.
             </li>
           </ul>
 <pre class="codeblock"><code>export const API_BASE_URL = new InjectionToken&lt;string&gt;('API_BASE_URL');
@@ -223,156 +317,203 @@ export const appConfig: ApplicationConfig = {
         </article>
       </section>
 
-      <!-- GRASP -->
       <section class="panel" id="grasp">
         <h2>GRASP</h2>
         <p class="lede tight">
-          <strong>GRASP</strong> (General Responsibility Assignment Software Patterns / Principles) —
-          девять фундаментальных принципов назначения ответственности объектам.
-          Введены Крэгом Ларманом в книге <em>Applying UML and Patterns</em>.
-          SOLID отвечает на «как оформить зависимости», GRASP — на «<em>кому</em> дать работу».
+          GRASP расшифровывается как General Responsibility Assignment Software Patterns (или Principles).
+          Это набор из девяти фундаментальных принципов о том, как назначать ответственность объектам.
+          Их описал Крэг Ларман в книге <em>Applying UML and Patterns</em>.
+          Если SOLID больше про устойчивость структуры и направление зависимостей, то GRASP отвечает на более ранний вопрос:
+          <em>кому именно поручить работу</em>, когда вы только проектируете взаимодействие объектов.
         </p>
         <div class="sources-inline">
           <a href="https://en.wikipedia.org/wiki/GRASP_(object-oriented_design)" target="_blank" rel="noopener">Wikipedia: GRASP</a>
-          <a href="https://www.oreilly.com/library/view/applying-uml-and/0130925691/0130925691_ch16.html" target="_blank" rel="noopener">Larman, ch.16 (O’Reilly)</a>
+          <a href="https://www.oreilly.com/library/view/applying-uml-and/0130925691/0130925691_ch16.html" target="_blank" rel="noopener">Larman, глава 16 (O’Reilly)</a>
         </div>
 
         <article class="topic">
-          <h3>High Cohesion / Low Coupling</h3>
+          <h3>High Cohesion и Low Coupling</h3>
           <blockquote class="def">
-            <strong>High Cohesion</strong> — обязанности элемента сфокусированы и связаны между собой.
-            <strong>Low Coupling</strong> — элемент имеет мало зависимостей от других элементов; изменения локализуются.
-            <cite>— GRASP / Larman (см. <a href="https://en.wikipedia.org/wiki/GRASP_(object-oriented_design)" target="_blank" rel="noopener">обзор</a>)</cite>
+            High Cohesion означает, что обязанности внутри элемента логически связаны и сфокусированы на одной теме.
+            Low Coupling означает, что элемент мало знает о других элементах и слабо от них зависит.
+            Вместе эти два принципа задают «здравый смысл» модульности: внутри — плотность смысла, снаружи — немного связей.
+            <cite>— GRASP / Larman; обзор: <a href="https://en.wikipedia.org/wiki/GRASP_(object-oriented_design)" target="_blank" rel="noopener">Wikipedia</a></cite>
           </blockquote>
-          <h4>В Angular</h4>
-          <ul class="bullets">
-            <li>Feature-папка / library <code>orders</code>: routes, components, facade, api — про заказы.</li>
-            <li>Не импортировать deep-пути соседней фичи (<code>billing/internal/...</code>) — только публичный API lib.</li>
-            <li>В workspace с несколькими <code>projects</code>: общая UI-kit библиотека — нормально; общая «божественная» доменная модель на все apps — повышает coupling.</li>
-          </ul>
+          <h4>Как это выглядит в Angular</h4>
+          <p>
+            Feature-библиотека или папка <code>orders</code> должна содержать то, что относится к заказам:
+            маршруты, компоненты, facade, API-клиент, мапперы. Если эта же библиотека напрямую лезет
+            во внутренние файлы <code>billing</code>, связанность между модулями растёт, и любое изменение биллинга
+            начинает ломать заказы.
+          </p>
+          <p>
+            В workspace с несколькими приложениями общая UI-kit библиотека — нормальная низкосвязанная зависимость:
+            кнопки и формы редко несут смысл предметной области. А вот одна общая «модель всего бизнеса» на все apps
+            обычно повышает coupling и в итоге мешает командам развивать продукты независимо.
+          </p>
         </article>
 
         <article class="topic">
           <h3>Information Expert</h3>
           <blockquote class="def">
             «Assign a responsibility to the information expert — the class that has the information necessary to fulfill the responsibility.»
-            <cite>— Craig Larman, Information Expert
-            (<a href="https://www.oreilly.com/library/view/applying-uml-and/0130925691/0130925691_ch16lev1sec7.html" target="_blank" rel="noopener">Applying UML and Patterns</a>)</cite>
+            <cite>
+              — Крэг Ларман, Information Expert;
+              <a href="https://www.oreilly.com/library/view/applying-uml-and/0130925691/0130925691_ch16lev1sec7.html" target="_blank" rel="noopener">Applying UML and Patterns</a>
+            </cite>
           </blockquote>
-          <h4>В Angular</h4>
-          <ul class="bullets">
-            <li>Правило «можно ли отменить заказ» живёт рядом с данными заказа: метод/pure-функция у модели/VM, а не копипаста в трёх компонентах.</li>
-            <li>Анемичный DTO + «бог-сервис» на все правила — типичное нарушение Expert.</li>
-            <li>Исключение: если Expert тянет инфраструктуру (сохранение в БД) — см. Pure Fabrication / SRP.</li>
-          </ul>
+          <p>
+            По-русски: поручайте задачу тому классу, у которого уже есть информация, необходимая для её выполнения.
+            Это помогает не плодить «анемичные» объекты, у которых есть только поля, а вся логика живёт в одном
+            огромном сервисе-командире.
+          </p>
+          <h4>Как это выглядит в Angular</h4>
+          <p>
+            Правило «можно ли отменить заказ» почти наверняка зависит от статуса заказа, времени создания
+            и, возможно, от роли пользователя. Если все нужные данные уже собраны в модели заказа или во view-model,
+            именно там и стоит жить проверке <code>canCancel</code> — как методу или как чистой функции рядом с типом.
+            Копировать одно и то же условие в три компонента — значит нарушать Expert и одновременно плодить баги рассинхрона.
+          </p>
+          <p class="ang">
+            Важная оговорка Лармана: если следование Expert затаскивает в доменный объект инфраструктуру
+            (например, заказ сам умеет ходить в HTTP), выигрыш в «экспертности» быстро превращается в проигрыш по связности.
+            Тогда ответственность выносят в искусственный объект — см. Pure Fabrication ниже.
+          </p>
         </article>
 
         <article class="topic">
           <h3>Creator</h3>
           <blockquote class="def">
-            Ответственность за создание экземпляра B назначают классу A, если A содержит / агрегирует B,
-            активно использует B, или имеет данные инициализации B (упрощённо — частный случай Expert для создания).
+            Ответственность за создание объекта B стоит отдать объекту A, если A содержит B, агрегирует B,
+            активно использует B или уже обладает данными, нужными для инициализации B.
+            Упрощённо Creator — это Information Expert, применённый именно к моменту создания.
             <cite>— GRASP Creator (Larman)</cite>
           </blockquote>
-          <h4>В Angular</h4>
-          <ul class="bullets">
-            <li>Store/facade или mapper создаёт <code>OrderVm</code> из DTO — он владеет коллекцией и данными инициализации.</li>
-            <li>Компонент не делает <code>new Order(...)</code> из сырого JSON ответа.</li>
-            <li>Angular DI — отдельный механизм жизненного цикла сервисов; Creator про доменное создание объектов в сценарии, не про <code>providedIn</code>.</li>
-          </ul>
+          <h4>Как это выглядит в Angular</h4>
+          <p>
+            Когда с сервера приходит DTO, создавать удобную для экрана модель должен тот слой, который владеет
+            этими данными и дальше с ними работает: mapper, store или facade. Компоненту незачем знать,
+            какие поля обязательны для конструктора доменного объекта, и незачем размазывать
+            <code>new Order(...)</code> по шаблонной логике.
+          </p>
+          <p>
+            Не путайте Creator с Angular DI. DI решает, кто создаст сервис и как долго он будет жить в injector’е.
+            Creator из GRASP — про ответственность за рождение доменных или view-model объектов внутри сценария.
+          </p>
         </article>
 
         <article class="topic">
           <h3>Controller</h3>
           <blockquote class="def">
-            Назначить ответственность за обработку системного события объекту, представляющему систему / сценарий use-case
-            (первый объект за UI или другим входом, который координирует работу).
+            Назначьте ответственность за обработку системного события объекту, который представляет систему в целом
+            или один use-case. Этот объект стоит первым после входа извне и координирует дальнейшую работу,
+            но не обязан сам содержать всю бизнес-логику.
             <cite>— GRASP Controller (Larman)</cite>
           </blockquote>
-          <h4>В Angular</h4>
-          <ul class="bullets">
-            <li><strong>UI-уровень:</strong> компонент принимает клик/сабмит и делегирует дальше — сам не содержит бизнес-сценарий.</li>
-            <li><strong>Application-уровень:</strong> facade / effect / use-case service: «оформить заказ» = валидация состояния → вызов API → обновление signals → router.navigate.</li>
-            <li>Плохой Controller: компонент на сотни строк с ветвлением бизнес-правил и несколькими HTTP-вызовами.</li>
-          </ul>
+          <h4>Как это выглядит в Angular</h4>
+          <p>
+            На UI-уровне контроллером часто выступает компонент: он получает клик или submit и должен быстро
+            делегировать сценарий дальше. На уровне приложения контроллером становится facade, effect или
+            use-case service: именно он знает порядок шагов «проверить корзину → вызвать API → обновить состояние → перейти на страницу успеха».
+          </p>
+          <p class="ang">
+            Плохой Controller — это компонент на несколько сотен строк, в котором одновременно разбирается форма,
+            валидируются бизнес-правила, сериализуется запрос, обрабатываются три HTTP-ответа и вручную клеится навигация.
+            Такой код трудно читать именно потому, что роль «координатора входа» смешалась с ролью «эксперта предметной области»
+            и с ролью «транспортного адаптера».
+          </p>
         </article>
 
         <article class="topic">
           <h3>Pure Fabrication</h3>
           <blockquote class="def">
-            Создать искусственный класс, которого нет в предметной области, чтобы поддержать high cohesion / low coupling
-            и не загрязнять domain-объекты инфраструктурой.
+            Создайте искусственный класс, которого нет в словаре предметной области, если это помогает сохранить
+            высокую связность и низкую связанность и не загрязняет бизнес-объекты инфраструктурой.
             <cite>— GRASP Pure Fabrication (Larman)</cite>
           </blockquote>
-          <h4>В Angular</h4>
-          <ul class="bullets">
-            <li><code>OrdersApi</code>, functional interceptor, <code>ErrorMapper</code>, SignalStore / NgRx — fabrication’ы.</li>
-            <li>Они не «заказ» и не «клиент» в языке бизнеса, но держат инфраструктурные обязанности отдельно от UI и правил домена.</li>
-          </ul>
+          <h4>Как это выглядит в Angular</h4>
+          <p>
+            В языке бизнеса нет сущности «HttpInterceptor» или «SignalStore». Тем не менее эти объекты нужны архитектуре:
+            они держат технические обязанности отдельно от экрана и от правил заказа. То же самое относится к
+            <code>OrdersApi</code>, к <code>ErrorMapper</code> и к тонкому storage-адаптеру для <code>localStorage</code>.
+          </p>
+          <p>
+            Pure Fabrication — это разрешение инженеру ввести конструкцию «ради кода», когда буквальный перенос
+            всех обязанностей в бизнес-объект сделал бы систему хуже.
+          </p>
         </article>
 
         <article class="topic">
           <h3>Indirection</h3>
           <blockquote class="def">
-            Назначить ответственность промежуточному объекту, чтобы развязать (decouple) другие компоненты.
+            Назначьте ответственность промежуточному объекту, чтобы развязать другие компоненты и уменьшить
+            жёсткую связанность между ними.
             <cite>— GRASP Indirection (Larman)</cite>
           </blockquote>
           <p>
-            Adapter, Facade, Proxy, Repository — часто реализации идеи Indirection.
+            Многие знакомые паттерны — Adapter, Facade, Proxy, Repository — по сути являются разными формами
+            одной и той же идеи: между двумя сторонами появляется управляемая прослойка.
           </p>
-          <h4>В Angular</h4>
+          <h4>Как это выглядит в Angular</h4>
           <ul class="bullets">
-            <li>Facade между компонентом и несколькими API-сервисами.</li>
-            <li>Mapper DTO → VM между сырым контрактом пакета API и шаблоном.</li>
-            <li>Interceptor между feature-кодом и транспортом HTTP.</li>
-            <li>BFF между Angular-приложением и набором микросервисов.</li>
+            <li>Facade стоит между компонентом и несколькими API-сервисами, чтобы шаблон не знал про зоопарк клиентов.</li>
+            <li>Mapper DTO → view-model стоит между сырым контрактом пакета API и тем, что удобно показывать в шаблоне.</li>
+            <li>Interceptor стоит между feature-кодом и транспортом HTTP: добавляет токен, логирует, нормализует ошибки.</li>
+            <li>BFF стоит между Angular-приложением и набором микросервисов, если собирать ответ на клиенте слишком дорого или хрупко.</li>
           </ul>
         </article>
 
         <article class="topic">
           <h3>Polymorphism</h3>
           <blockquote class="def">
-            Когда поведение зависит от типа, назначать ответственность полиморфным операциям — альтернативы через
-            подстановку реализаций, а не через разрастающиеся условные ветки по типу.
+            Когда поведение меняется в зависимости от типа, назначайте ответственность полиморфным операциям.
+            Вместо длинных условных конструкций по типу объекта используйте общую абстракцию и набор реализаций.
             <cite>— GRASP Polymorphism (Larman)</cite>
           </blockquote>
-          <h4>В Angular</h4>
-          <ul class="bullets">
-            <li>Разные реализации <code>PriceStrategy</code> / feature providers для retail vs partner apps в одном monorepo.</li>
-            <li>Разные auth-адаптеры по стенду через один token.</li>
-          </ul>
+          <h4>Как это выглядит в Angular</h4>
+          <p>
+            Если retail-приложение и partner-приложение считают цену по-разному, не обязательно размазывать
+            <code>if (appType === 'partner')</code> по сервисам. Можно описать общий контракт стратегии цены
+            и подставить нужную реализацию через providers конкретного app в monorepo.
+            То же самое работает для auth-адаптеров разных стендов: контракт один, реализации разные.
+          </p>
         </article>
 
         <article class="topic">
           <h3>Protected Variations</h3>
           <blockquote class="def">
-            Идентифицировать точки вероятных изменений и обернуть их стабильной интерфейсной точкой, чтобы вариации
-            не «пробивали» клиентов.
-            <cite>— GRASP Protected Variations (Larman); тесно связан с OCP / DIP</cite>
+            Найдите места, где изменения наиболее вероятны, и оберните их стабильной точкой вариации —
+            интерфейсом, адаптером, отдельным сервисом, — чтобы эти изменения не пробивали клиентов навылет.
+            <cite>— GRASP Protected Variations (Larman); тесно связан с OCP и DIP</cite>
           </blockquote>
-          <h4>В Angular (критично для multi-API / multi-stand)</h4>
-          <ul class="bullets">
-            <li><strong>Нестабильно:</strong> контракты 10–20 сервисов, URL стендов, форматы ошибок, теги бэкенд-пакетов.</li>
-            <li><strong>Стабильно для UI:</strong> сценарии экранов и типы VM фичи.</li>
-            <li>
-              <strong>Защита:</strong> слой <code>data-access</code>, mapper, <code>InjectionToken</code> для base URL,
-              клиент/OpenAPI по зафиксированному тегу, при необходимости — BFF с контрактом под Angular-app.
-            </li>
-          </ul>
+          <h4>Как это выглядит в Angular при многих API и стендах</h4>
+          <p>
+            В вашей вакансии нестабильны как раз внешние границы: контракты десятка сервисов, адреса стендов,
+            форматы ошибок, теги пакетов бэкенда. А для пользователя и для UI-сценария желательно, чтобы экран заказа
+            оставался узнаваемым и относительно стабильным.
+          </p>
+          <p>
+            Поэтому между шаблоном и внешним миром ставят защиту: слой <code>data-access</code>, маппер в локальную модель,
+            <code>InjectionToken</code> для base URL, зафиксированная версия API-клиента, а при необходимости —
+            BFF с контрактом, специально заточенным под Angular-приложение. Тогда MAJOR у одного микросервиса
+            бьёт по границе, а не по всем компонентам сразу.
+          </p>
           <div class="callout">
-            Связка с SOLID: OCP достигается через Polymorphism + Protected Variations; DIP — через Indirection + PV;
-            SRP — через High Cohesion + Information Expert.
+            Как GRASP стыкуется с SOLID: Open/Closed часто достигается через Polymorphism и Protected Variations;
+            Dependency Inversion — через Indirection и те же точки защиты; Single Responsibility хорошо сочетается
+            с High Cohesion и Information Expert.
           </div>
         </article>
       </section>
 
-      <!-- DDD -->
       <section class="panel" id="ddd">
-        <h2>DDD · Strategic Design</h2>
+        <h2>DDD и Strategic Design</h2>
         <p class="lede tight">
-          <strong>Domain-Driven Design</strong> — подход Эрика Эванса: сложность ПО снижается фокусом на предметной области
-          и явной модели, выраженной в коде и в языке команды.
-          <strong>Strategic Design</strong> — часть DDD про крупные границы: где модель едина, а где нужны отдельные модели и карты связей.
+          Domain-Driven Design (предметно-ориентированное проектирование) — подход Эрика Эванса.
+          Его главная мысль: в сложных системах нужно явно работать с предметной областью, говорить с бизнесом
+          на одном языке и отражать этот язык в коде. Strategic Design — это «крупномасштабная» часть DDD:
+          она помогает понять, где модель должна быть единой, а где лучше завести отдельные модели и аккуратно
+          описать связи между ними.
         </p>
         <div class="sources-inline">
           <a href="https://www.domainlanguage.com/ddd/" target="_blank" rel="noopener">domainlanguage.com (Evans)</a>
@@ -381,175 +522,231 @@ export const appConfig: ApplicationConfig = {
         </div>
 
         <article class="topic">
-          <h3>Ubiquitous Language</h3>
+          <h3>Ubiquitous Language (единый язык)</h3>
           <blockquote class="def">
-            Единый язык модели, на котором говорят разработчики и эксперты предметной области; термины языка
-            напрямую отражаются в коде модели.
+            Единый язык модели, на котором говорят и разработчики, и эксперты предметной области.
+            Термины этого языка напрямую отражаются в коде, в тестах и в разговорах команды.
             <cite>— Eric Evans, Domain-Driven Design</cite>
           </blockquote>
-          <h4>В Angular</h4>
-          <ul class="bullets">
-            <li>Имена типов, сигналов, route data и сообщений об ошибках совпадают с языком продукта («Заказ», «Черновик», «Отгрузка»).</li>
-            <li>Если в admin говорят «Заявка», а в client — «Заказ», это сигнал разных контекстов: не форсировать один shared-тип.</li>
-          </ul>
+          <h4>Как это выглядит в Angular</h4>
+          <p>
+            Если продукт говорит «черновик заявки», не называйте сущность в коде <code>TempOrderDraftEntity</code>
+            без необходимости. Имена типов, signals, route’ов и текстов ошибок должны совпадать с языком команды.
+            Когда в клиентском портале говорят «заказ», а в админке — «заявка», это уже сигнал, что перед вами
+            могут быть разные модели, даже если JSON с бэкенда выглядит похоже.
+          </p>
         </article>
 
         <article class="topic">
-          <h3>Bounded Context</h3>
+          <h3>Bounded Context (ограниченный контекст)</h3>
           <blockquote class="def">
             «A description of a boundary (typically a subsystem, or the work of a particular team) within which a particular model is defined and applicable.»
-            <cite>— Eric Evans; также: «explicit boundary within which a domain model exists… Ubiquitous Language have specific meaning» — Vaughn Vernon, IDDD</cite>
+            <cite>— Eric Evans</cite>
           </blockquote>
           <p>
-            Martin Fowler: Bounded Context — центральный паттерн strategic design; большая система делится на контексты
-            с явными взаимосвязями, потому что полная унификация модели обычно нереалистична.
-            Источник: <a href="https://martinfowler.com/bliki/BoundedContext.html" target="_blank" rel="noopener">martinfowler.com/bliki/BoundedContext</a>.
+            Vaughn Vernon уточняет practically ту же мысль: Bounded Context — это явная граница, внутри которой
+            существует конкретная модель, а все термины Ubiquitous Language имеют точный смысл.
+            Martin Fowler подчёркивает, что именно Bounded Context стоит в центре strategic design:
+            большую систему делят на контексты и явно описывают их взаимосвязи, потому что полная унификация
+            одной гигантской модели обычно нереалистична. Источник:
+            <a href="https://martinfowler.com/bliki/BoundedContext.html" target="_blank" rel="noopener">martinfowler.com/bliki/BoundedContext</a>.
           </p>
-          <h4>В Angular workspace</h4>
-          <ul class="bullets">
-            <li><code>apps/client-portal</code>, <code>apps/partner-cabinet</code>, <code>apps/ops-admin</code> — кандидаты в разные Bounded Contexts.</li>
-            <li>Один JSON-поле <code>customer</code> с бэка не означает одну модель TypeScript на все apps.</li>
-            <li>
-              Структура:
-              <code>libs/client-portal/orders</code> и <code>libs/partner-cabinet/deals</code> — свои модели;
-              <code>libs/shared/ui-kit</code> — общее UI; <code>libs/shared/auth</code> — инфраструктура (осторожно с доменом).
-            </li>
-          </ul>
+          <h4>Как это выглядит в Angular workspace</h4>
+          <p>
+            Несколько приложений в одном репозитории — хороший кандидат на несколько Bounded Contexts.
+            Например, <code>client-portal</code>, <code>partner-cabinet</code> и <code>ops-admin</code> могут по-разному
+            понимать, кто такой «клиент» и что такое «заказ». Общий JSON с бэкенда сам по себе ещё не повод
+            завести один TypeScript-тип на все приложения.
+          </p>
+          <p>
+            Практичная раскладка: доменные модели живут рядом со своим приложением или feature-библиотекой,
+            а в <code>shared</code> остаются вещи вроде ui-kit, логирования и, осторожно, инфраструктуры аутентификации.
+            Папка называется <code>shared</code> — это ещё не значит, что туда можно свалить всю предметную область.
+          </p>
         </article>
 
         <article class="topic">
-          <h3>Context Map и отношения</h3>
+          <h3>Context Map и отношения между контекстами</h3>
           <blockquote class="def">
-            Context Map фиксирует Bounded Contexts и отношения между ними (кто upstream/downstream, как интегрируются модели).
-            <cite>— Evans, Part IV Strategic Design; Vernon, IDDD ch.3</cite>
+            Context Map — это карта Bounded Contexts и отношений между ними: кто является источником контракта,
+            кто потребителем, и каким способом модели переводятся друг в друга.
+            <cite>— Evans, Part IV Strategic Design; Vernon, Implementing Domain-Driven Design, глава про context mapping</cite>
           </blockquote>
+          <p>На интервью достаточно уверенно объяснить несколько базовых отношений:</p>
           <ul class="bullets">
-            <li><strong>Customer/Supplier</strong> — upstream задаёт контракт, downstream потребляет (часто команда API → Angular-команда).</li>
-            <li><strong>Conformist</strong> — downstream принимает модель upstream «как есть» (типично при жёстком OpenAPI без влияния фронта).</li>
-            <li><strong>Anti-Corruption Layer (ACL)</strong> — слой перевода, чтобы чужая модель не протекала внутрь контекста.</li>
-            <li><strong>Shared Kernel</strong> — маленькое genuinely общее ядро; не путать с папкой <code>shared/</code> на всё подряд.</li>
+            <li>
+              <strong>Customer/Supplier</strong> — upstream-команда задаёт контракт, downstream-команда его потребляет.
+              Часто это выглядит как «команда API определила OpenAPI, Angular-команда подстроилась».
+            </li>
+            <li>
+              <strong>Conformist</strong> — потребитель принимает модель поставщика почти без сопротивления.
+              Так бывает, когда фронт не может влиять на форму DTO и вынужден жить «как прислали».
+            </li>
+            <li>
+              <strong>Anti-Corruption Layer (ACL)</strong> — слой перевода, который не даёт чужой модели протечь внутрь вашего контекста.
+            </li>
+            <li>
+              <strong>Shared Kernel</strong> — небольшое действительно общее ядро. Это редкий и дорогой инструмент,
+              а не оправдание для свалки всего кода в <code>libs/shared/domain</code>.
+            </li>
           </ul>
-          <h4>ACL во фронтенде</h4>
+          <h4>Anti-Corruption Layer на фронтенде</h4>
+          <p>
+            Самый частый ACL в Angular — это маппер из DTO пакета API в локальную модель экрана или домена приложения.
+            Шаблон и facade работают уже с понятными полями вроде <code>status: 'paid'</code>, а не с сырым
+            <code>status_code: 2</code> из чужого контракта. Когда вы обновляете тег зависимости, правите в первую очередь
+            границу ACL, а не половину компонентов.
+          </p>
 <pre class="codeblock"><code>// контракт зависимости / OpenAPI
 type OrderDto = { order_id: string; status_code: number };
 
 // модель контекста Angular-приложения
 type Order = { id: string; status: 'new' | 'paid' | 'cancelled' | 'unknown' };
 
-export function toOrder(dto: OrderDto): Order { /* ... */ }</code></pre>
-          <p class="ang">
-            Mapper + типы VM — практический ACL: шаблоны и facade зависят от <code>Order</code>, а не от
-            <code>status_code</code> пакета API. При обновлении тега зависимости чините ACL, а не полприложения.
-          </p>
+export function toOrder(dto: OrderDto): Order {
+  // перевод чужого контракта в язык вашего приложения
+}</code></pre>
         </article>
       </section>
 
-      <!-- BFF -->
       <section class="panel" id="bff">
-        <h2>BFF · Backend for Frontend</h2>
+        <h2>BFF — Backend for Frontend</h2>
         <p class="lede tight">
-          Паттерн архитектурный: отдельный backend-сервис (или слой) под конкретный frontend/interface,
-          вместо одного general-purpose API на все клиенты.
+          BFF — архитектурный паттерн: для конкретного frontend-интерфейса делают отдельный backend-слой,
+          вместо того чтобы заставлять один общий API одинаково хорошо служить всем клиентам сразу.
+          Идею популяризировал Sam Newman; Microsoft включила её в Azure Architecture Center как отдельный pattern.
         </p>
         <div class="sources-inline">
           <a href="https://learn.microsoft.com/en-us/azure/architecture/patterns/backends-for-frontends" target="_blank" rel="noopener">Microsoft Learn: Backends for Frontends</a>
           <a href="https://samnewman.io/patterns/architectural/bff/" target="_blank" rel="noopener">Sam Newman: BFF</a>
-          <a href="https://habr.com/ru/articles/557406/" target="_blank" rel="noopener">Habr: BFF (обзор)</a>
+          <a href="https://habr.com/ru/articles/557406/" target="_blank" rel="noopener">Habr: обзор BFF</a>
         </div>
 
         <article class="topic">
-          <h3>Определение (Microsoft Azure Architecture Center)</h3>
+          <h3>Официальная формулировка Microsoft</h3>
           <blockquote class="def">
             «Create a separate backend service for each frontend interface, instead of using a single general-purpose backend for all of them.
             This approach lets you tailor each backend to the needs of its frontend…»
-            <cite>— <a href="https://learn.microsoft.com/en-us/azure/architecture/patterns/backends-for-frontends" target="_blank" rel="noopener">Backends for Frontends pattern</a>; основано на паттерне Sam Newman</cite>
+            <cite>
+              —
+              <a href="https://learn.microsoft.com/en-us/azure/architecture/patterns/backends-for-frontends" target="_blank" rel="noopener">Backends for Frontends pattern</a>;
+              в основе лежит паттерн Sam Newman
+            </cite>
           </blockquote>
           <p>
-            Проблема: несколько клиентов (web/desktop/mobile) давят на один backend разными требованиями к payload,
-            пагинации, производительности → узкое место и конфликт релизов.
-            Решение: слой BFF между клиентом и доменными сервисами; при нескольких интерфейсах — часто <em>по BFF на интерфейс</em>.
+            Перевод смысла: создайте отдельный backend-сервис для каждого frontend-интерфейса, вместо одного
+            универсального backend на всех. Так каждый backend можно подогнать под нужды своего клиента
+            и не превратить общий сервис в место вечного конфликта требований.
           </p>
-          <h4>Что Microsoft явно рекомендует помнить</h4>
+          <p>
+            Типичная проблема выглядит так. Сначала есть web-клиент и один backend. Потом появляется mobile.
+            У мобильного клиента другие ограничения по сети, другой экран, другая пагинация, другой набор полей.
+            Если продолжать гнуть один API под всех, этот API начинает обрастать специальными флагами,
+            а команды фронтенда ждут друг друга на каждом релизе.
+          </p>
+          <p>Microsoft отдельно подчёркивает несколько важных ограничений паттерна:</p>
           <ul class="bullets">
-            <li>BFF должен содержать <em>client-specific</em> логику UX; cross-cutting (auth perimeter, rate limit, routing) — отдельно (gateway / gatekeeper).</li>
-            <li>Дублирование кода между BFF’ами — ожидаемый trade-off.</li>
-            <li>Лишняя сеть hop → latency; не плодить BFF без нужды.</li>
-            <li>Если клиенты ходят почти одинаково — один shared backend / gateway может быть достаточным.</li>
+            <li>
+              В BFF должна жить логика, специфичная для пользовательского опыта конкретного клиента.
+              Сквозные вещи вроде периметра авторизации, rate limiting и маршрутизации лучше оставлять gateway-слою.
+            </li>
+            <li>
+              Некоторое дублирование кода между разными BFF — ожидаемая цена за независимость клиентов.
+            </li>
+            <li>
+              Появляется дополнительный сетевой hop, а значит может вырасти latency. Не нужно плодить BFF «на всякий случай».
+            </li>
+            <li>
+              Если все клиенты ходят почти одинаково, отдельный BFF может быть лишним: хватит общего backend или API gateway.
+            </li>
           </ul>
         </article>
 
         <article class="topic">
-          <h3>Как это стыкуется с Angular</h3>
+          <h3>Как это стыкуется с Angular-проектом</h3>
+          <p>
+            Для Angular-приложения BFF — это стабильный контракт «под наш UI». В идеальном случае экран зависит
+            от одного клиента вроде <code>OrdersBffClient</code>, сгенерированного из OpenAPI, а не от десяти разных
+            микросервисных клиентов, которые компонент или даже facade вынужден склеивать самостоятельно.
+          </p>
           <ul class="bullets">
             <li>
-              Angular-app зависит от <strong>одного</strong> стабильного контракта BFF (OpenAPI → сгенерированный клиент),
-              а не от 10 клиентов микросервисов в каждом экране.
+              Base URL в environment указывает на BFF конкретного стенда. Подробнее про HTTP-слой Angular:
+              <a href="https://angular.dev/guide/http" target="_blank" rel="noopener">HttpClient guide</a>.
             </li>
             <li>
-              В коде: <code>OrdersBffClient</code> / <code>provideHttpClient</code> + base URL стенда BFF
-              (<a href="https://angular.dev/guide/http" target="_blank" rel="noopener">HttpClient guide</a>).
+              Facade остаётся координатором use-case: он вызывает методы BFF, обновляет signals и решает,
+              что показать пользователю. Но тяжёлую агрегацию «профиль + заказ + платежи + доставка»
+              по возможности лучше делать на BFF, а не длинным waterfall’ом из браузера.
             </li>
             <li>
-              Facade остаётся use-case controller’ом: вызывает BFF-методы под экран, обновляет signals.
-              Агрегация «склеить профиль + заказ + платежи» по возможности на BFF, не waterfall’ом из компонента.
-            </li>
-            <li>
-              Несколько Angular projects: client-portal BFF и admin BFF могут быть разными сервисами/пакетами
-              (разные интерфейсы → разные BFF по определению паттерна).
+              Если в monorepo несколько приложений, у них вполне могут быть разные BFF.
+              Это прямо следует из определения паттерна: отдельный backend под отдельный frontend interface.
             </li>
           </ul>
           <div class="compare">
             <div>
-              <h3>Angular data-access без BFF</h3>
-              <ul>
-                <li>Несколько <code>*Api</code> сервисов</li>
-                <li>Склейка в facade</li>
-                <li>UI чувствителен к ломке каждого микросервиса</li>
-              </ul>
+              <h3>Только Angular data-access</h3>
+              <p>
+                В приложении много мелких API-сервисов. Facade сам собирает экран из нескольких ответов.
+                Это нормально, пока запросов мало и контракты относительно стабильны. Но каждый микросервис
+                может сломать UI своей MAJOR-версией.
+              </p>
             </div>
             <div>
-              <h3>Angular + BFF</h3>
-              <ul>
-                <li>Один клиент контракта экрана/канала</li>
-                <li>Агрегация/формат на сервере</li>
-                <li>Protected Variations для UI</li>
-              </ul>
+              <h3>Angular плюс BFF</h3>
+              <p>
+                Приложение зависит от контракта, заточенного под канал или экран. Агрегация и подгонка формата
+                происходят на сервере. Для UI это сильный Protected Variations: внутренние сервисы могут меняться,
+                пока BFF сохраняет обещанный контракт.
+              </p>
             </div>
           </div>
         </article>
       </section>
 
-      <!-- Versioning -->
       <section class="panel" id="versioning">
-        <h2>Версионирование · бэкенд как зависимость по тегам</h2>
+        <h2>Версионирование: бэкенд как зависимость по тегам</h2>
         <p class="lede tight">
-          Когда OpenAPI-клиент / npm-пакет / git-dependency бэкенда лежит в репозитории Angular-приложения
-          и обновляется по git/npm tag, вы версионируете <em>публичный контракт</em> на границе контекста.
+          На многих проектах фронтенд подключает OpenAPI-клиент, npm-пакет или git-dependency бэкенда прямо в репозиторий
+          и обновляет его по тегу. С точки зрения архитектуры вы версионируете не «весь бэкенд мира», а публичный контракт
+          на границе вашего Angular-контекста.
         </p>
         <div class="sources-inline">
           <a href="https://semver.org/" target="_blank" rel="noopener">Semantic Versioning 2.0.0</a>
           <a href="https://docs.npmjs.com/about-semantic-versioning" target="_blank" rel="noopener">npm: About semantic versioning</a>
-          <a href="https://docs.npmjs.com/cli/v10/configuring-npm/package-json#dependencies" target="_blank" rel="noopener">npm package.json dependencies</a>
+          <a href="https://docs.npmjs.com/cli/v10/configuring-npm/package-json#dependencies" target="_blank" rel="noopener">npm: dependencies в package.json</a>
         </div>
 
         <article class="topic">
-          <h3>Определение SemVer</h3>
+          <h3>Что говорит спецификация SemVer</h3>
           <blockquote class="def">
             Given a version number MAJOR.MINOR.PATCH, increment the:
             <br />1. MAJOR version when you make incompatible API changes
             <br />2. MINOR version when you add functionality in a backward compatible manner
             <br />3. PATCH version when you make backward compatible bug fixes
-            <cite>— <a href="https://semver.org/" target="_blank" rel="noopener">semver.org</a> (Tom Preston-Werner)</cite>
+            <cite>— <a href="https://semver.org/" target="_blank" rel="noopener">semver.org</a>, автор Tom Preston-Werner</cite>
           </blockquote>
-          <ul class="bullets">
-            <li>ПО, использующее SemVer, <strong>MUST</strong> объявить публичный API (документация и/или код).</li>
-            <li>После релиза содержимое версии <strong>MUST NOT</strong> меняться — любые правки = новая версия.</li>
-            <li><code>0.y.z</code> — начальная разработка, API может быть нестабильным.</li>
-          </ul>
+          <p>
+            Если говорить по-русски: номер версии имеет вид MAJOR.MINOR.PATCH.
+            MAJOR поднимают, когда публичный API меняется несовместимо.
+            MINOR поднимают, когда добавляют обратно совместимую функциональность.
+            PATCH поднимают, когда делают обратно совместимые исправления ошибок.
+          </p>
+          <p>
+            Спецификация требует, чтобы программное обеспечение, заявляющее SemVer, явно определило свой публичный API —
+            в документации, в коде или и там, и там. После того как версия опубликована, её содержимое нельзя молча менять:
+            любое изменение выпускается уже как новая версия. Пока пакет в зоне <code>0.y.z</code>, API считается
+            нестабильным и может меняться свободно.
+          </p>
         </article>
 
         <article class="topic">
           <h3>Как это выглядит в Angular-репозитории</h3>
+          <p>
+            Зависимость может быть обычным npm-пакетом с точной версией или git-зависимостью с тегом.
+            В обоих случаях идея одна: в lockfile зафиксировано, с каким контрактом собран фронтенд.
+          </p>
 <pre class="codeblock"><code>// package.json
 {
   "dependencies": {
@@ -557,45 +754,81 @@ export function toOrder(dto: OrderDto): Order { /* ... */ }</code></pre>
     "@company/catalog-api": "git+ssh://git@github.com/company/catalog-api.git#v3.2.1"
   }
 }</code></pre>
+          <p>Рабочий процесс обновления обычно такой:</p>
           <ol class="steps">
-            <li>Обновить tag / версию в <code>package.json</code> и lockfile.</li>
-            <li>Перегенерировать клиент/типы из OpenAPI (если генерация в CI/local script).</li>
-            <li>TypeScript подсветит несовместимости в ACL/facade — починить mapper и вызовы.</li>
-            <li>Прогнать тесты; выкатить на стенд, где крутится <em>совместимая</em> версия BFF/API.</li>
+            <li>Поднимаете версию или тег в <code>package.json</code> и обновляете lockfile.</li>
+            <li>Если клиент генерируется из OpenAPI, перегенерируете типы и SDK.</li>
+            <li>
+              TypeScript показывает места, где старый код больше не сходится с новым контрактом.
+              Чаще всего это ACL-мапперы и вызовы в data-access слое.
+            </li>
+            <li>
+              Прогоняете тесты и проверяете стенд, на котором крутится совместимая версия BFF или API.
+              Нельзя выкатывать фронтенд, собранный под контракт <code>2.x</code>, на стенд, где ещё живёт сервис <code>1.x</code>.
+            </li>
           </ol>
-          <h4>Стенды</h4>
-          <ul class="bullets">
-            <li><code>environment.ts</code> / configuration задаёт <code>apiBaseUrl</code> и связанные providers (DIP).</li>
-            <li>Версия npm-клиента и версия сервиса на стенде должны согласовываться: фронт, собранный под <code>2.x</code> контракт, нельзя деплоить на стенд с API <code>1.x</code>.</li>
-            <li>Breaking (MAJOR): versioned endpoint (<code>/v2</code>), параллельный пакет, или период dual-support в ACL.</li>
-          </ul>
+          <h4>Стенды и совместимость</h4>
+          <p>
+            Файлы environment и application config задают, куда именно ходит приложение: base URL, набор providers,
+            иногда feature flags. Это как раз место для DIP. А вот совместимость версий — отдельная дисциплина релиза:
+            тег клиента в репозитории фронтенда и фактическая версия сервиса на стенде должны договариваться заранее.
+          </p>
+          <p>
+            Если пришёл MAJOR, вариантов несколько: versioned endpoint вроде <code>/v2</code>, параллельный пакет клиента,
+            временная поддержка двух форм в маппере, либо согласованное окно, когда фронт и бэкенд выкатываются вместе.
+            На интервью полезно проговорить не только «подниму тег», но и «как пойму, что стенд ещё не готов к этой версии».
+          </p>
           <p class="ang">
-            Связь с Protected Variations и ACL: UI зависит от стабильных VM-типов; ломается и чинится граница
-            <code>data-access</code> при обновлении тега зависимости.
+            Здесь снова встречаются Protected Variations и ACL. UI зависит от относительно стабильных моделей экрана.
+            Ломается и чинится граница data-access, когда вы обновляете тег зависимости. Именно поэтому маппер
+            и сгенерированный клиент так важны: они принимают удар контрактных изменений первыми.
           </p>
         </article>
       </section>
 
       <section class="panel" id="pitch">
-        <h2>Каркас ответа на собеседовании (~90 сек)</h2>
+        <h2>Короткий ответ на собеседовании примерно на полторы минуты</h2>
+        <p class="lede tight">
+          Ниже не список терминов, а связный каркас. Его можно проговорить своими словами.
+        </p>
         <ol class="steps">
-          <li>Несколько Angular apps — разные Bounded Contexts; shared — ui-kit и инфраструктура, не вся доменная модель.</li>
-          <li>Много API → data-access + ACL mapper; тяжёлая агрегация под экран → BFF (Newman/Microsoft).</li>
-          <li>Стенды → <code>InjectionToken</code> + environment providers (DIP), не ветвление по имени стенда в UI.</li>
-          <li>Бэкенд-пакет по тегам → SemVer, diff контракта, согласованный деплой фронт↔API.</li>
-          <li>Внутри фичи: Controller (facade), Information Expert (модель), Pure Fabrication (api/interceptor), Low Coupling между libs.</li>
+          <li>
+            Если в workspace несколько Angular-приложений, я отношусь к ним как к разным Bounded Contexts:
+            общий ui-kit и инфраструктура допустимы, а вот одна доменная модель на все продукты обычно вредна.
+          </li>
+          <li>
+            При большом числе API я не зову микросервисы прямо из компонентов. Между UI и сетью живут data-access
+            и ACL-маппер. Если экран требует тяжёлой агрегации или разные приложения хотят разный shape данных,
+            я рассматриваю BFF по определению Newman и Microsoft.
+          </li>
+          <li>
+            Различия стендов выношу в environment и DI-providers. Компоненты зависят от абстракций вроде base URL
+            и портов, а не от строки с именем стенда.
+          </li>
+          <li>
+            Когда бэкенд подключен как зависимость по тегу, я опираюсь на SemVer: смотрю diff контракта,
+            обновляю клиент и мапперы, проверяю совместимость версии сервиса на целевом стенде.
+          </li>
+          <li>
+            Внутри фичи думаю языком GRASP: компонент и facade как Controller, правила рядом с данными как Information Expert,
+            API и interceptor как Pure Fabrication, а граница с нестабильными сервисами — как Protected Variations.
+          </li>
         </ol>
       </section>
 
       <section class="panel" id="sources">
         <h2>Официальные и канонические источники</h2>
+        <p class="lede tight">
+          Имеет смысл опираться на первоисточники, а не только на пересказы. Ниже — базовый набор ссылок,
+          которого обычно достаточно, чтобы и подтянуть тему, и уверенно назвать источник на интервью.
+        </p>
         <div class="rows">
           <div>
             <h3>SOLID</h3>
             <ul class="bullets">
               <li><a href="https://blog.cleancoder.com/uncle-bob/2020/10/18/Solid-Relevance.html" target="_blank" rel="noopener">Martin — Solid Relevance</a></li>
-              <li><a href="https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html" target="_blank" rel="noopener">Martin — SRP</a></li>
-              <li><a href="https://blog.cleancoder.com/uncle-bob/2014/05/12/TheOpenClosedPrinciple.html" target="_blank" rel="noopener">Martin — OCP</a></li>
+              <li><a href="https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html" target="_blank" rel="noopener">Martin — Single Responsibility Principle</a></li>
+              <li><a href="https://blog.cleancoder.com/uncle-bob/2014/05/12/TheOpenClosedPrinciple.html" target="_blank" rel="noopener">Martin — Open Closed Principle</a></li>
               <li><a href="https://en.wikipedia.org/wiki/SOLID" target="_blank" rel="noopener">Wikipedia — SOLID</a></li>
             </ul>
           </div>
@@ -603,7 +836,7 @@ export function toOrder(dto: OrderDto): Order { /* ... */ }</code></pre>
             <h3>GRASP</h3>
             <ul class="bullets">
               <li><a href="https://en.wikipedia.org/wiki/GRASP_(object-oriented_design)" target="_blank" rel="noopener">Wikipedia — GRASP</a></li>
-              <li>Craig Larman — <em>Applying UML and Patterns</em> (главы про GRASP)</li>
+              <li>Craig Larman — книга <em>Applying UML and Patterns</em>, главы про назначение ответственности</li>
             </ul>
           </div>
           <div>
@@ -615,10 +848,10 @@ export function toOrder(dto: OrderDto): Order { /* ... */ }</code></pre>
             </ul>
           </div>
           <div>
-            <h3>BFF / SemVer / Angular</h3>
+            <h3>BFF, SemVer и Angular</h3>
             <ul class="bullets">
               <li><a href="https://learn.microsoft.com/en-us/azure/architecture/patterns/backends-for-frontends" target="_blank" rel="noopener">Microsoft — Backends for Frontends</a></li>
-              <li><a href="https://samnewman.io/patterns/architectural/bff/" target="_blank" rel="noopener">Sam Newman — BFF</a></li>
+              <li><a href="https://samnewman.io/patterns/architectural/bff/" target="_blank" rel="noopener">Sam Newman — Backends For Frontends</a></li>
               <li><a href="https://semver.org/" target="_blank" rel="noopener">Semantic Versioning 2.0.0</a></li>
               <li><a href="https://angular.dev/guide/di" target="_blank" rel="noopener">Angular — Dependency injection</a></li>
               <li><a href="https://angular.dev/guide/http" target="_blank" rel="noopener">Angular — HttpClient</a></li>
@@ -630,14 +863,18 @@ export function toOrder(dto: OrderDto): Order { /* ... */ }</code></pre>
 
       <section class="panel tasks" id="tasks">
         <h2>Задачи на рассуждение</h2>
-        <p class="lede tight">Сначала ответь сам, потом открой разбор.</p>
+        <p class="lede tight">
+          Сначала попробуйте ответить самостоятельно. Потом откройте разбор и сравните ход мысли.
+          В разборах специально написаны полные формулировки, а не короткие пометки.
+        </p>
         <div id="task-list"></div>
       </section>
 
       <section class="panel coding" id="coding">
-        <h2>Coding tasks</h2>
+        <h2>Небольшие coding-задачи</h2>
         <p class="lede tight">
-          Небольшие упражнения в браузере. Пиши функцию в редакторе и жми «Проверить».
+          Это короткие упражнения прямо в браузере. Напишите функцию в редакторе и нажмите «Проверить».
+          Задачи тренируют маппинг контракта, правило рядом с данными, SemVer и раскладку по слоям.
         </p>
         <div id="coding-list"></div>
       </section>
@@ -645,8 +882,10 @@ export function toOrder(dto: OrderDto): Order { /* ... */ }</code></pre>
 
     <footer class="foot">
       <p>
-        Определения — из первоисточников (Martin, Larman, Evans/Vernon/Fowler, Newman/Microsoft, semver.org, angular.dev).
-        Примеры применения — в терминах Angular DI, HttpClient, feature libraries и SemVer-зависимостей.
+        Определения взяты из первоисточников: Роберт Мартин, Крэг Ларман, Эрик Эванс и Vaughn Vernon,
+        Martin Fowler, Sam Newman и Microsoft Learn, semver.org и документация angular.dev.
+        Примеры применения написаны применительно к Angular: DI, HttpClient, feature-библиотеки,
+        несколько приложений в workspace и зависимости по SemVer-тегам.
       </p>
     </footer>
 

@@ -256,8 +256,18 @@ main {
   color: var(--teal-deep);
 }
 
-.topic > p {
+.topic > p,
+.topic p {
   margin: 0.55rem 0 0;
+  color: var(--ink-soft);
+}
+
+.answer {
+  line-height: 1.55;
+}
+
+.compare p {
+  margin: 0.35rem 0 0;
   color: var(--ink-soft);
 }
 
