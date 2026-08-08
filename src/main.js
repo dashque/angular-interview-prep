@@ -71,6 +71,24 @@ const tasks = [
     answer:
       'Сейчас быстро — потому что система ещё маленькая или изменение ещё одно. Принципы появляются, когда начинают повторяться дорогие симптомы: правка API ломает UI, новый стенд требует правок в компонентах, правило canCancel копируется и расходится, добавить способ оплаты страшно. Facade, mapper и InjectionToken — это швы, которые локализуют будущие изменения. Можно ответить так: мы платим небольшую структуру сейчас, чтобы следующее изменение контракта, стенда или правила не превращалось в переписывание экрана целиком.',
   },
+  {
+    id: 't9',
+    title: 'Один Bounded Context или два',
+    level: 'DDD Strategic',
+    prompt:
+      'В client-portal слово «заказ» означает покупку с оплатой и доставкой, а в ops-admin «заказ» — это тикет поддержки с внутренними статусами и SLA. Продакт предлагает сделать один общий модуль Order на оба приложения. Как аргументировать решение через DDD?',
+    answer:
+      'Ключевой признак — расхождение ubiquitous language: одно слово, но разные инварианты, разные статусы и разные правила. Это сигнал двух разных Bounded Contexts, а не одной модели. Общий модуль Order здесь стал бы Shared Kernel, который придётся согласовывать обеим командам при каждом изменении, и он быстро оброс бы флагами «только для админки» и «только для портала». Правильнее завести две отдельные модели рядом со своими приложениями, а на стыке с API поставить ACL-мапперы. Если между контекстами всё же есть общее понятие (например, идентификатор заказа или Money), его можно оформить как маленький стабильный shared-элемент, но не «весь заказ целиком». На интервью стоит явно назвать: разные языки → разные контексты → отдельные модели плюс перевод на границе.',
+  },
+  {
+    id: 't10',
+    title: 'Один BFF на web и mobile или два',
+    level: 'BFF',
+    prompt:
+      'У продукта есть Angular web-приложение и мобильный клиент. Web показывает большую таблицу с множеством полей, mobile — компактные карточки и экономит трафик. Сейчас оба ходят в один общий API. Что предложить и какие компромиссы назвать?',
+    answer:
+      'Это классический сценарий, ради которого BFF и придумали: у клиентов разные потребности к shape и объёму данных. Разумно предложить по BFF на интерфейс — web-BFF отдаёт богатый ответ и агрегирует нужные web-таблице поля, mobile-BFF отдаёт компактный payload и меньше round-trip’ов. Обязательно назвать компромиссы, о которых прямо предупреждает Microsoft: появится дублирование кода между двумя BFF, добавится ещё один сетевой hop и, соответственно, инфраструктура и её сопровождение. Сквозные вещи — авторизацию, rate limiting, маршрутизацию — лучше держать в общем gateway, а не копировать в каждый BFF. Если бы web и mobile ходили почти одинаково, отдельные BFF были бы избыточны и хватило бы одного общего слоя.',
+  },
 ];
 
 const challenges = [
@@ -102,26 +120,31 @@ for (const [input, expected] of cases) {
     id: 'c2',
     title: 'Information Expert: canCancel',
     blurb:
-      'Реализуйте правило рядом с данными заказа. Функция canCancel(order, now) должна возвращать true только если status равен "new" и заказ создан не раньше чем 30 минут назад относительно now.',
+      'Реализуйте правило рядом с данными заказа. Функция canCancel(order, now) должна возвращать true только если status равен "new" и возраст заказа не превышает 30 минут включительно (то есть ровно 30 минут — ещё можно, 30 минут и одна миллисекунда — уже нельзя).',
     starter: `function canCancel(order, now) {
   // order: { status: string, createdAt: number } // epoch в миллисекундах
   // now: number
 }`,
     hiddenTests: `
 const now = 1_700_000_000_000;
-const ok = canCancel({ status: 'new', createdAt: now - 10 * 60 * 1000 }, now);
-const old = canCancel({ status: 'new', createdAt: now - 31 * 60 * 1000 }, now);
-const paid = canCancel({ status: 'paid', createdAt: now - 5 * 60 * 1000 }, now);
-if (ok !== true) throw new Error('Ожидался true для свежего заказа со статусом new');
+const min = 60 * 1000;
+const fresh = canCancel({ status: 'new', createdAt: now - 10 * min }, now);
+const exactly30 = canCancel({ status: 'new', createdAt: now - 30 * min }, now);
+const justOver = canCancel({ status: 'new', createdAt: now - 30 * min - 1 }, now);
+const old = canCancel({ status: 'new', createdAt: now - 31 * min }, now);
+const paid = canCancel({ status: 'paid', createdAt: now - 5 * min }, now);
+if (fresh !== true) throw new Error('Ожидался true для свежего заказа со статусом new');
+if (exactly30 !== true) throw new Error('Ровно 30 минут — граница включительно, ожидался true');
+if (justOver !== false) throw new Error('30 минут и 1 мс — уже нельзя, ожидался false');
 if (old !== false) throw new Error('Ожидался false для слишком старого заказа');
 if (paid !== false) throw new Error('Ожидался false для оплаченного заказа');
-'Отлично: canCancel работает'`,
+'Отлично: canCancel работает, граница учтена'`,
   },
   {
     id: 'c3',
     title: 'Подъём версии по SemVer',
     blurb:
-      'Напишите функцию nextVersion(current, change). Параметр change может быть "breaking", "feature" или "fix". Функция должна вернуть новую semver-строку по правилам MAJOR / MINOR / PATCH.',
+      'Напишите функцию nextVersion(current, change). Параметр change может быть "breaking", "feature" или "fix". Верните новую semver-строку по правилам MAJOR / MINOR / PATCH. Для простоты зону 0.x трактуем механически: feature всегда поднимает minor, breaking — major (специальное правило «в 0.x всё нестабильно» здесь игнорируем).',
     starter: `function nextVersion(current, change) {
   // current выглядит как "1.4.2"
 }`,
@@ -141,24 +164,84 @@ for (const [cur, ch, exp] of pairs) {
   },
   {
     id: 'c4',
-    title: 'Low Coupling: выбрать слой',
+    title: 'Куда положить вызов: определить слой',
     blurb:
-      'Напишите функцию classify(callSite), которая по месту вызова подсказывает слой. Правила: click-handler → ui, load-order-screen → facade, map-dto → acl, http-get → api.',
-    starter: `function classify(callSite) {
-  // callSite: 'click-handler' | 'load-order-screen' | 'map-dto' | 'http-get'
+      'Напишите функцию classify(action), которая по описанию действия возвращает подходящий слой. Правила: действие, начинающееся с "render"/"on" → "ui"; с "orchestrate"/"loadScreen" → "facade"; с "map"/"toVm" → "acl"; с "http"/"fetch" → "api". Если действие не подходит ни под одно правило — выбросьте Error с текстом "unknown layer".',
+    starter: `function classify(action) {
+  // примеры: 'onSubmit', 'orchestrateCheckout', 'mapOrderDto', 'httpGetOrders'
+  // вернуть: 'ui' | 'facade' | 'acl' | 'api' либо бросить Error('unknown layer')
 }`,
     hiddenTests: `
-const map = {
-  'click-handler': 'ui',
-  'load-order-screen': 'facade',
-  'map-dto': 'acl',
-  'http-get': 'api',
-};
-for (const [k, v] of Object.entries(map)) {
-  const got = classify(k);
-  if (got !== v) throw new Error(k + ' дало ' + got + ', а нужно ' + v);
+const ok = [
+  ['onSubmit', 'ui'],
+  ['renderRow', 'ui'],
+  ['orchestrateCheckout', 'facade'],
+  ['loadScreenData', 'facade'],
+  ['mapOrderDto', 'acl'],
+  ['toVmOrder', 'acl'],
+  ['httpGetOrders', 'api'],
+  ['fetchProfile', 'api'],
+];
+for (const [action, layer] of ok) {
+  const got = classify(action);
+  if (got !== layer) throw new Error(action + ' дало ' + got + ', а нужно ' + layer);
 }
-'Отлично: слои разложены верно'`,
+let threw = false;
+try { classify('deleteEverything'); } catch (e) { threw = e.message === 'unknown layer'; }
+if (!threw) throw new Error('Для неизвестного действия ожидался Error("unknown layer")');
+'Отлично: слои определяются, неизвестное отсекается'`,
+  },
+  {
+    id: 'c5',
+    title: 'DDD: что можно шарить между контекстами',
+    blurb:
+      'Напишите функцию isSafeToShare(kind), которая решает, можно ли выносить артефакт в общую библиотеку для нескольких Bounded Contexts. Инфраструктура и UI шарятся ("ui-kit", "logger", "http-interceptor", "money-vo" → true), а доменные модели — нет ("order-model", "customer-model", "pricing-rules" → false). Незнакомый kind — консервативно false.',
+    starter: `function isSafeToShare(kind) {
+  // вернуть true только для действительно нейтральных артефактов
+}`,
+    hiddenTests: `
+const shareable = ['ui-kit', 'logger', 'http-interceptor', 'money-vo'];
+const contextBound = ['order-model', 'customer-model', 'pricing-rules'];
+for (const k of shareable) {
+  if (isSafeToShare(k) !== true) throw new Error(k + ' должно быть безопасно шарить (true)');
+}
+for (const k of contextBound) {
+  if (isSafeToShare(k) !== false) throw new Error(k + ' привязано к контексту, ожидался false');
+}
+if (isSafeToShare('something-unknown') !== false) {
+  throw new Error('Незнакомый артефакт по умолчанию не шарим (ожидался false)');
+}
+'Отлично: граница контекста соблюдена'`,
+  },
+  {
+    id: 'c6',
+    title: 'BFF: собрать view-model экрана',
+    blurb:
+      'Смоделируйте агрегацию, которую в реальности делал бы BFF. Функция buildOrderCard(profile, order, payments) должна собрать один объект под экран: { customerName, orderId, status, paidTotal }. Имя — из profile.name; orderId и status — из order; paidTotal — сумма amount по всем платежам со статусом "captured" (остальные игнорируются).',
+    starter: `function buildOrderCard(profile, order, payments) {
+  // profile: { name: string }
+  // order: { id: string, status: string }
+  // payments: Array<{ amount: number, status: string }>
+  // вернуть: { customerName, orderId, status, paidTotal }
+}`,
+    hiddenTests: `
+const card = buildOrderCard(
+  { name: 'Дарья' },
+  { id: 'O-100', status: 'paid' },
+  [
+    { amount: 500, status: 'captured' },
+    { amount: 300, status: 'pending' },
+    { amount: 200, status: 'captured' },
+  ],
+);
+if (card.customerName !== 'Дарья') throw new Error('customerName должен браться из profile.name');
+if (card.orderId !== 'O-100') throw new Error('orderId должен браться из order.id');
+if (card.status !== 'paid') throw new Error('status должен браться из order.status');
+if (card.paidTotal !== 700) throw new Error('paidTotal должен суммировать только captured (ожидалось 700, получено ' + card.paidTotal + ')');
+
+const empty = buildOrderCard({ name: 'X' }, { id: 'O-1', status: 'new' }, []);
+if (empty.paidTotal !== 0) throw new Error('Без captured-платежей paidTotal должен быть 0');
+'Отлично: агрегация под экран собрана'`,
   },
 ];
 
