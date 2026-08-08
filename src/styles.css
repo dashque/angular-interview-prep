@@ -215,6 +215,38 @@ main {
   letter-spacing: -0.02em;
 }
 
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 0 0 1.35rem;
+}
+
+.why-grid > div {
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, white 78%, var(--paper-2));
+}
+
+.why-grid h3 {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  color: var(--teal-deep);
+}
+
+.why-grid p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.98rem;
+}
+
+@media (max-width: 820px) {
+  .why-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .sources-inline {
   display: flex;
   flex-wrap: wrap;
