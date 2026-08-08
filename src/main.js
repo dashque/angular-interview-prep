@@ -24,7 +24,7 @@ const tasks = [
     prompt:
       'Экран «Карточка заказа» делает waterfall из 9 HTTP к разным сервисам. Когда достаточно Angular facade, а когда нужен BFF?',
     answer:
-      'Facade ок, если запросов мало, данные простые, нет чувствительной склейки на клиенте. BFF нужен при тяжёлой агрегации, разных контрактах web/mobile, скрытии внутренних API, sync поверх async, защите UI от частых ломок микросервисов (Protected Variations).',
+      'По Microsoft BFF: отдельный backend под конкретный frontend interface, когда shared API становится узким местом. Facade в Angular достаточен при простой оркестрации 1–3 вызовов. BFF — когда нужна агрегация/формат под экран, разные контракты client vs admin apps, изоляция UI от частых MAJOR микросервисов (Protected Variations). Cross-cutting (auth perimeter) лучше в gateway, не раздувать BFF доменом.',
   },
   {
     id: 't4',

@@ -215,6 +215,115 @@ main {
   letter-spacing: -0.02em;
 }
 
+.sources-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.75rem;
+  margin: 0 0 1.25rem;
+}
+
+.sources-inline a {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--teal-deep);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--teal) 45%, transparent);
+}
+
+.sources-inline a:hover,
+.sources-inline a:focus-visible {
+  border-bottom-color: var(--teal-deep);
+  outline: none;
+}
+
+.topic {
+  margin: 0 0 1.1rem;
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, white 68%, var(--paper));
+}
+
+.topic h3 {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+}
+
+.topic h4 {
+  margin: 0.9rem 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--teal-deep);
+}
+
+.topic > p {
+  margin: 0.55rem 0 0;
+  color: var(--ink-soft);
+}
+
+.def {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border-left: 3px solid var(--ink);
+  background: color-mix(in srgb, var(--paper-2) 55%, white);
+  color: var(--ink);
+  font-size: 0.98rem;
+}
+
+.def cite {
+  display: block;
+  margin-top: 0.55rem;
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.def cite a {
+  color: var(--teal-deep);
+}
+
+.bullets {
+  margin: 0.4rem 0 0;
+  padding-left: 1.15rem;
+  color: var(--ink-soft);
+}
+
+.bullets li + li {
+  margin-top: 0.35rem;
+}
+
+.bullets a {
+  color: var(--teal-deep);
+}
+
+.ang {
+  margin-top: 0.75rem !important;
+  padding: 0.7rem 0.85rem;
+  border-left: 3px solid var(--amber);
+  background: color-mix(in srgb, var(--amber) 10%, white);
+  color: var(--ink) !important;
+}
+
+.codeblock {
+  margin: 0.85rem 0 0;
+  padding: 0.85rem 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: var(--code-bg);
+  color: var(--code-fg);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.codeblock code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
 .grid-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
