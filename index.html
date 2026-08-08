@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Angular Architecture Interview Prep</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">К содержанию</a>
+
+    <header class="top">
+      <div class="top__brand">
+        <span class="mark" aria-hidden="true"></span>
+        <div>
+          <p class="eyebrow">Angular 21 · multi-API · multi-stand</p>
+          <h1>Architecture Interview Desk</h1>
+        </div>
+      </div>
+      <nav class="top__nav" aria-label="Разделы">
+        <a href="#map">Карта</a>
+        <a href="#solid">SOLID</a>
+        <a href="#grasp">GRASP</a>
+        <a href="#ddd">DDD</a>
+        <a href="#bff">BFF</a>
+        <a href="#versioning">Версии</a>
+        <a href="#tasks">Задачи</a>
+        <a href="#coding">Coding</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="map">
+        <div class="hero__copy">
+          <p class="kicker">Шпаргалка к собесу</p>
+          <h2>
+            Не «что такое SOLID», а
+            <em>где границы</em> между UI, API и стендами.
+          </h2>
+          <p class="lede">
+            Теория с аналогиями на Angular, разборные задачи и небольшие coding-таски.
+            Контекст вакансии: несколько проектов, много сервисов, бэкенд как зависимость по тегам.
+          </p>
+        </div>
+        <aside class="stack" aria-label="Слои архитектуры">
+          <div class="stack__layer" data-layer="ui">Component / template</div>
+          <div class="stack__layer" data-layer="app">Facade · SignalStore</div>
+          <div class="stack__layer" data-layer="acl">ACL mapper · VM</div>
+          <div class="stack__layer" data-layer="bff">BFF contract</div>
+          <div class="stack__layer" data-layer="api">Microservices · tags</div>
+        </aside>
+      </section>
+
+      <section class="panel" id="cheat">
+        <h2>Карта тем</h2>
+        <div class="grid-cards">
+          <article>
+            <h3>GRASP</h3>
+            <p>Кто за что отвечает. Где жить логике.</p>
+          </article>
+          <article>
+            <h3>SOLID</h3>
+            <p>Как менять код без каскадных правок.</p>
+          </article>
+          <article>
+            <h3>DDD Strategic</h3>
+            <p>Границы доменов между apps и API.</p>
+          </article>
+          <article>
+            <h3>BFF</h3>
+            <p>Кто собирает данные под экран.</p>
+          </article>
+          <article>
+            <h3>Версионирование</h3>
+            <p>Бэкенд-зависимость и SemVer по тегам.</p>
+          </article>
+        </div>
+        <p class="note">
+          Аналогия: компонент — витрина, service/facade — сценарий, HttpClient — адаптер,
+          environments — разные стенды, BFF — официант между кухней микросервисов и гостем-UI.
+        </p>
+      </section>
+
+      <section class="panel" id="solid">
+        <h2>SOLID · оформление классов</h2>
+        <div class="rows">
+          <div>
+            <h3>S — Single Responsibility</h3>
+            <p>
+              Одна ось изменений. <code>OrderListComponent</code> — UI,
+              <code>OrderApiService</code> — HTTP, facade — сценарий экрана.
+              Не тащи API + localStorage + скидку в компонент.
+            </p>
+          </div>
+          <div>
+            <h3>O — Open/Closed</h3>
+            <p>
+              Новый способ оплаты = новая стратегия + <code>provide</code>, а не
+              <code>if (type === 'sbp')</code> в старом сервисе. Interceptors — расширение пайплайна без правки HttpClient.
+            </p>
+          </div>
+          <div>
+            <h3>L — Liskov</h3>
+            <p>
+              Подмена реализации не ломает контракт. Любой interceptor должен вернуть поток событий;
+              <code>DevTokenProvider</code> и <code>ProdTokenProvider</code> — один смысл токена.
+            </p>
+          </div>
+          <div>
+            <h3>I — Interface Segregation</h3>
+            <p>
+              Не гигантский <code>IBackendApi</code>. Отдельные
+              <code>OrdersApi</code>, <code>UsersApi</code>, <code>CatalogApi</code>.
+            </p>
+          </div>
+          <div>
+            <h3>D — Dependency Inversion</h3>
+            <p>
+              Facade зависит от <code>PAYMENT_PORT</code>, а не от Stripe-класса.
+              Стенды = разные <code>providers</code> на один токен, без
+              <code>if (environment.name)</code> в компонентах.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="grasp">
+        <h2>GRASP · кто за что отвечает</h2>
+        <p class="lede tight">
+          SOLID — форма. GRASP — распределение ответственности. Девять шаблонов, сгруппированных как в разборе на Хабре.
+        </p>
+        <div class="rows">
+          <div>
+            <h3>High Cohesion / Low Coupling</h3>
+            <p>
+              Feature <code>orders/</code> про заказы. Не импортирует внутренности
+              <code>billing/</code> — только публичный API. В monorepo UI-kit можно шарить, домен — осторожно.
+            </p>
+          </div>
+          <div>
+            <h3>Information Expert</h3>
+            <p>
+              Поведение рядом с данными: <code>order.canCancel()</code> или pure-функция у типа,
+              а не копипаста правила в трёх компонентах. Анемичная модель + бог-сервис — антипаттерн.
+            </p>
+          </div>
+          <div>
+            <h3>Creator</h3>
+            <p>
+              Создаёт ближайший владелец: store/mapper делает <code>OrderVm</code> из DTO,
+              компонент не вызывает <code>new Order()</code>.
+            </p>
+          </div>
+          <div>
+            <h3>Controller</h3>
+            <p>
+              UI-controller — компонент (клик → facade). Use-case controller — facade/effect сценария.
+              Плохо: компонент на 400 строк с бизнес-логикой.
+            </p>
+          </div>
+          <div>
+            <h3>Pure Fabrication</h3>
+            <p>
+              Искусственные объекты ради архитектуры: ApiService, Interceptor, ErrorMapper, SignalStore.
+              В бизнесе их нет — в коде они держат cohesion/coupling.
+            </p>
+          </div>
+          <div>
+            <h3>Indirection</h3>
+            <p>
+              Прослойки: facade, BFF, DTO→VM mapper, interceptor. Adapter/Facade/Proxy — частные случаи.
+            </p>
+          </div>
+          <div>
+            <h3>Polymorphism + Protected Variations</h3>
+            <p>
+              Разное поведение через контракт. Защита ядра UI от нестабильных 20 API и тегов бэка —
+              data-access + маппинг + абстракция URL + часто BFF.
+            </p>
+          </div>
+        </div>
+        <div class="callout">
+          <strong>Связка:</strong> OCP ≈ Polymorphism + Protected Variations; DIP ≈ Indirection + PV; SRP ≈ High Cohesion + Expert.
+        </div>
+      </section>
+
+      <section class="panel" id="ddd">
+        <h2>DDD · Strategic Design</h2>
+        <div class="rows">
+          <div>
+            <h3>Ubiquitous Language</h3>
+            <p>
+              Одинаковые слова с бизнесом. В клиенте «Заказ», в админке «Заявка» — разные модели,
+              даже если JSON похож.
+            </p>
+          </div>
+          <div>
+            <h3>Bounded Context</h3>
+            <p>
+              <code>client-portal</code>, <code>partner-cabinet</code>, <code>ops-admin</code> —
+              разные контексты. Один <code>Customer</code> ≠ одна shared-модель на все apps.
+            </p>
+          </div>
+          <div>
+            <h3>Context Map</h3>
+            <p>
+              Customer/Supplier, Conformist (фронт подстраивается под API), Anti-Corruption Layer,
+              Shared Kernel (редко). ACL на фронте = <code>toOrder(dto)</code>.
+            </p>
+          </div>
+          <div>
+            <h3>Monorepo-правило</h3>
+            <p>
+              Shared: ui-kit, auth, logging. Не shared: «божественная» доменная модель на все проекты.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="bff">
+        <h2>BFF · Backend for Frontend</h2>
+        <p>
+          Легковесный сервис <em>под конкретный клиент</em>: ходит в микросервисы, собирает и форматирует
+          данные под экран, отдаёт один удобный контракт. Не второй монолит и не место для тяжёлого домена.
+        </p>
+        <div class="compare">
+          <div>
+            <h3>Без BFF</h3>
+            <ul>
+              <li>Angular сам клеит 8–15 API</li>
+              <li>waterfall и хрупкие экраны</li>
+              <li>ломка при каждом микросервисе</li>
+            </ul>
+          </div>
+          <div>
+            <h3>С BFF</h3>
+            <ul>
+              <li>Один <code>OrdersBffClient</code> на экран</li>
+              <li>Типы от OpenAPI BFF</li>
+              <li>Стенд смотрит на URL BFF стенда</li>
+            </ul>
+          </div>
+        </div>
+        <p class="note">
+          Gateway маршрутизирует и режет трафик. BFF собирает контракт под UI. Angular service — только клиент.
+        </p>
+      </section>
+
+      <section class="panel" id="versioning">
+        <h2>Версионирование · бэкенд как зависимость</h2>
+        <p>
+          В репо фронта лежит клиент/OpenAPI как пакет или git-зависимость, обновление по тегу
+          (<code>@company/orders-api@1.8.3</code>).
+        </p>
+        <div class="semver">
+          <div><span>MAJOR</span> ломающий контракт</div>
+          <div><span>MINOR</span> совместимое добавление</div>
+          <div><span>PATCH</span> фикс без смены контракта</div>
+        </div>
+        <ol class="steps">
+          <li>Подняли tag в package.json / lockfile</li>
+          <li>Перегенерили клиент / типы</li>
+          <li>Починили красный TypeScript</li>
+          <li>Проверили стенд с совместимой версией бэка</li>
+        </ol>
+        <p class="note">
+          Не деплоить фронт, требующий новых полей, на стенд со старым API. Breaking → versioned route или параллельный пакет.
+        </p>
+      </section>
+
+      <section class="panel" id="pitch">
+        <h2>Ответ на 90 секунд</h2>
+        <ol class="steps">
+          <li>Несколько Angular apps ≈ Bounded Contexts; shared только инфраструктура и UI-kit.</li>
+          <li>Много API → data-access + ACL; тяжёлая склейка экрана → BFF.</li>
+          <li>Стенды → DI + environments, не if по имени стенда в UI.</li>
+          <li>Бэкенд по тегам → SemVer, diff контракта, согласованный деплой.</li>
+          <li>Внутри фичи: Controller / Expert / Pure Fabrication / Low Coupling.</li>
+        </ol>
+      </section>
+
+      <section class="panel tasks" id="tasks">
+        <h2>Задачи на рассуждение</h2>
+        <p class="lede tight">Сначала ответь сам, потом открой разбор.</p>
+        <div id="task-list"></div>
+      </section>
+
+      <section class="panel coding" id="coding">
+        <h2>Coding tasks</h2>
+        <p class="lede tight">
+          Небольшие упражнения в браузере. Пиши функцию в редакторе и жми «Проверить».
+        </p>
+        <div id="coding-list"></div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p>
+        Источники: GRASP/SOLID разбор на Хабре, BFF (True Engineering). Контекст —
+        Angular 21, multi-API, multi-stand, backend dependency tags.
+      </p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
